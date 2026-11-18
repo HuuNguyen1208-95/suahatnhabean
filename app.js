@@ -75,28 +75,6 @@ const read = (key, fallback) => {
 
 let products = read("bean_products", DEFAULT_PRODUCTS);
 
-// Tự động đồng bộ giá, tên, mô tả và ảnh từ app.js vào localStorage
-if (localStorage.getItem("bean_products")) {
-  const defaultMap = new Map(DEFAULT_PRODUCTS.map(p => [p.id, p]));
-
-  // 1. Cập nhật lại toàn bộ thông tin (giá, tên, mô tả, ảnh, phân loại) của các món mặc định
-  products = products.map(p => {
-    if (defaultMap.has(p.id)) {
-      return { ...p, ...defaultMap.get(p.id) };
-    }
-    return p;
-  });
-
-  // 2. Thêm các món mới nếu bạn bổ sung thêm vào DEFAULT_PRODUCTS
-  const currentIds = new Set(products.map(p => p.id));
-  DEFAULT_PRODUCTS.forEach(p => {
-    if (!currentIds.has(p.id)) {
-      products.push(p);
-    }
-  });
-
-  localStorage.setItem("bean_products", JSON.stringify(products));
-}
 
 
 
@@ -377,29 +355,6 @@ $("#filters").onclick = e => {
 // ==========================================
 // 10. XỬ LÝ ĐẶT HÀNG
 // ==========================================
-
-// 1. Tạo nội dung đơn hàng gọn gàng để gửi qua Zalo
-const chiTietMon = cart.map(item => `- ${item.name} x${item.quantity} (${(item.price * item.quantity).toLocaleString('vi-VN')}đ)`).join('\n');
-
-const noiDungDonHang = `🥛 ĐƠN HÀNG MỚI - SỮA HẠT NHÀ BEAN
-👤 Khách hàng: ${customerName}
-📞 SĐT: ${customerPhone}
-📍 Địa chỉ: ${customerAddress}
-📝 Ghi chú: ${customerNote || 'Không có'}
--------------------------
-🛒 Chi tiết đơn:
-${chiTietMon}
-💰 Tổng tạm tính: ${totalAmount.toLocaleString('vi-VN')}đ`;
-
-// 2. Tự động copy nội dung đơn hàng vào bộ nhớ tạm của khách
-if (navigator.clipboard) {
-  navigator.clipboard.writeText(noiDungDonHang).catch(() => {});
-}
-
-// 3. Mở thẳng ứng dụng/trang chat Zalo của Nhà Bean
-const zaloUrl = `https://zalo.me/0779191188`;
-window.open(zaloUrl, '_blank');
-
 
 $("#checkoutForm").onsubmit = e => {
     e.preventDefault();

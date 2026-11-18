@@ -378,6 +378,29 @@ $("#filters").onclick = e => {
 // 10. XỬ LÝ ĐẶT HÀNG
 // ==========================================
 
+// 1. Tạo nội dung đơn hàng gọn gàng để gửi qua Zalo
+const chiTietMon = cart.map(item => `- ${item.name} x${item.quantity} (${(item.price * item.quantity).toLocaleString('vi-VN')}đ)`).join('\n');
+
+const noiDungDonHang = `🥛 ĐƠN HÀNG MỚI - SỮA HẠT NHÀ BEAN
+👤 Khách hàng: ${customerName}
+📞 SĐT: ${customerPhone}
+📍 Địa chỉ: ${customerAddress}
+📝 Ghi chú: ${customerNote || 'Không có'}
+-------------------------
+🛒 Chi tiết đơn:
+${chiTietMon}
+💰 Tổng tạm tính: ${totalAmount.toLocaleString('vi-VN')}đ`;
+
+// 2. Tự động copy nội dung đơn hàng vào bộ nhớ tạm của khách
+if (navigator.clipboard) {
+  navigator.clipboard.writeText(noiDungDonHang).catch(() => {});
+}
+
+// 3. Mở thẳng ứng dụng/trang chat Zalo của Nhà Bean
+const zaloUrl = `https://zalo.me/0779191188`;
+window.open(zaloUrl, '_blank');
+
+
 $("#checkoutForm").onsubmit = e => {
     e.preventDefault();
 
